@@ -1,0 +1,19 @@
+.offline {
+    width: 12px; /* Adjust size */
+    height: 12px; /* Adjust size */
+    border-radius: 50%;
+    margin-right: 8px; /* Space between circle and text */
+    display: inline-block;
+    background-color: red; /* Default color for offline status */
+  }
+
+
+
+  .online {
+    width: 12px; /* Adjust size */
+    height: 12px; /* Adjust size */
+    border-radius: 50%;
+    margin-right: 8px; /* Space between circle and text */
+    display: inline-block;
+    background-color: green; /* Default color for offline status */
+  }
