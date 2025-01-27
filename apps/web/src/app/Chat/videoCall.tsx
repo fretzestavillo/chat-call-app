@@ -97,7 +97,6 @@ export function VideoCall() {
 
   async function callButton() {
     const callDocRef = doc(collection(firestore, 'calls'));
-    console.log(callDocRef.id, 'id');
     setCallId(callDocRef.id);
 
     const offerCandidatesRef = collection(callDocRef, 'offerCandidates');
