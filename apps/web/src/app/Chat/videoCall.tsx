@@ -200,11 +200,11 @@ export function VideoCall() {
       <h2> Start your Webcam</h2>
       <div className="videos">
         <span>
-          <h3>{privatesender} camera</h3>
+          <h3>{privatesender} camera (localStream)</h3>
           <video ref={webcamVideo} autoPlay playsInline></video>
         </span>
         <span>
-          <h3>{privaterecipient} camera</h3>
+          <h3>{privaterecipient} camera (remoteStream)</h3>
           <video ref={remoteVideo} autoPlay playsInline></video>
         </span>
       </div>
