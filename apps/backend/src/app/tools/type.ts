@@ -16,25 +16,29 @@ export type MessageList = {
 };
 
 export type CreatePrivateMessage = {
-
   sender: string;
   recipient: string;
   messageContent: string;
-}
-
+};
 
 export type PrivatePeople = {
-  sender: string,
-  recipient: string
-}
+  sender: string;
+  recipient: string;
+};
 
 export type OnlineUserv2 = {
   userId: string;
   socketId: string;
-   name: string;  
-}
+  name: string;
+};
 
 export type Item = {
   socketId: string;
-  name: string
-}
+  name: string;
+};
+
+export type PrivateCaller = {
+  sender: string;
+  recipient: string;
+  callId: string;
+};
