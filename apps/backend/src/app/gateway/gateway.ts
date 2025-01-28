@@ -7,7 +7,12 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { CreatePrivateMessage, Inputs, Item,  } from '../tools/type';
+import {
+  CreatePrivateMessage,
+  Inputs,
+  Item,
+  PrivateCaller,
+} from '../tools/type';
 import { Inject, Logger } from '@nestjs/common';
 import { ChatService } from '../chat.service';
 
@@ -20,8 +25,7 @@ export class MyGateway
   private logger: Logger = new Logger('MyGateway');
   private count = 0;
   private userSockets: Map<string, string> = new Map();
-  public onlineUsers: Item[] = []
-  
+  public onlineUsers: Item[] = [];
 
   @WebSocketServer()
   private server: Server;
@@ -30,43 +34,35 @@ export class MyGateway
     this.logger.log(` 🚀 MyGateway is running on: http://localhost:3002`);
   }
 
-
   async handleConnection(client: Socket, ...args: any[]): Promise<void> {
     this.count += 1;
     this.logger.log(`Connected: ${this.count} connection connect}`);
-    
   }
 
   async handleDisconnect(client: Socket) {
     this.count -= 1;
     this.logger.log(`Connected: ${this.count} connection disconnect`);
-  
-    this.onlineUsers = this.onlineUsers.filter((user: Item) => user.socketId !== client.id);
-    this.server.emit('activeUsers', this.onlineUsers)
 
+    this.onlineUsers = this.onlineUsers.filter(
+      (user: Item) => user.socketId !== client.id
+    );
+    this.server.emit('activeUsers', this.onlineUsers);
   }
 
-
-
-   
   @SubscribeMessage('register_user')
   async registerOnlineUser(client: Socket, username: string) {
     const data: Item = {
       socketId: client.id,
-      name: username
-    }
-    this.onlineUsers.push(data)
+      name: username,
+    };
+    this.onlineUsers.push(data);
 
     const getAllUsers = await this.chatService.getAllUsers();
     this.server.emit('getAllUsers', getAllUsers);
-    this.userSockets.set(username, client.id );
+    this.userSockets.set(username, client.id);
 
-
-    this.server.emit('activeUsers', this.onlineUsers)
-   
+    this.server.emit('activeUsers', this.onlineUsers);
   }
-
-
 
   @SubscribeMessage('messageToServer')
   async GroupChat(client: Socket, data: Inputs) {
@@ -75,32 +71,26 @@ export class MyGateway
   }
 
   @SubscribeMessage('private_chat')
- async privateMessages(client: Socket, data: CreatePrivateMessage) {
-   const privateMessages = await this.chatService.createPrivateMessage(data);
-   const recipientSocketId = this.userSockets.get(privateMessages.recipient);
-   this.server.to(recipientSocketId).emit('private_message', privateMessages);
-   client.emit('private_message', privateMessages);
-
-
+  async privateMessages(client: Socket, data: CreatePrivateMessage) {
+    const privateMessages = await this.chatService.createPrivateMessage(data);
+    const recipientSocketId = this.userSockets.get(privateMessages.recipient);
+    this.server.to(recipientSocketId).emit('private_message', privateMessages);
+    client.emit('private_message', privateMessages);
   }
 
+  @SubscribeMessage('private_call_id')
+  async privateCallId(client: Socket, data: PrivateCaller) {
+    const recipientSocketId = this.userSockets.get(data.recipient);
+    this.server.to(recipientSocketId).emit('private_caller_id', data);
+    client.emit('private_caller_id', data);
 
-
-
-
-  @SubscribeMessage('send-offer')
-  handleOffer(client: Socket, payload: { to: string; offer: RTCSessionDescriptionInit }) {
-    this.server.to(payload.to).emit('receive-offer', { from: client.id, offer: payload.offer });
+    this.logger.log(
+      'I am here',
+      data.callId,
+      data.sender,
+      data.recipient,
+      'here =>',
+      recipientSocketId
+    );
   }
-
-  @SubscribeMessage('send-answer')
-  handleAnswer(client: Socket, payload: { to: string; answer: RTCSessionDescriptionInit }) {
-    this.server.to(payload.to).emit('receive-answer', { from: client.id, answer: payload.answer });
-  }
-
-  @SubscribeMessage('send-ice-candidate')
-  handleIceCandidate(client: Socket, payload: { to: string; candidate: RTCIceCandidate }) {
-    this.server.to(payload.to).emit('receive-ice-candidate', { from: client.id, candidate: payload.candidate });
-  }
-
 }
