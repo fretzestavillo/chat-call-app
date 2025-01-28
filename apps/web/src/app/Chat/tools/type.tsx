@@ -19,31 +19,33 @@ export type ChatList = {
   message: string;
 };
 
-
 export type PrivateContent = {
-    id: string;
-    sender: string;
-    recipient: string;
-    messageContent: string;
-    created_at: Date;
-  }
-  
+  id: string;
+  sender: string;
+  recipient: string;
+  messageContent: string;
+  created_at: Date;
+};
 
-  export type RegisteredUsers = {
-    firstName: string;
-  
-    lastName: string;
-  }
+export type RegisteredUsers = {
+  firstName: string;
 
+  lastName: string;
+};
 
-  export type OnlineUserv2 = {
-    userId: string;
-    socketId: string;
-     name: string;  
-  }
+export type OnlineUserv2 = {
+  userId: string;
+  socketId: string;
+  name: string;
+};
 
+export type Item = {
+  socketId: string;
+  name: string;
+};
 
-  export type Item = {
-    socketId: string;
-    name: string
-  }
+export type CallerItem = {
+  sender: string;
+  recipient: string;
+  callId: string;
+};
