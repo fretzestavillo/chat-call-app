@@ -43,15 +43,20 @@ export function VideoCall() {
 
   const webcamVideo = useRef<HTMLVideoElement>(null);
   const remoteVideo = useRef<HTMLVideoElement>(null);
-  const [callId, setCallId] = useState<string>('');
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
 
-  const [webcamIsDisabled, setWebcamIsDisabled] = useState(false);
-  const [callButtonIsDisabled, setCallButtonIsDisabled] = useState(true);
-  const [answerButtonIsDisabled, setAnswerButtonIsDisabled] = useState(true);
-  const [hangoutButtonIsDisabled, sethangoutButtonIsDisabled] = useState(false);
+  //   useEffect(() => {
+  //     if (privateCallId === undefined) {
+  //       console.log('hereeeeeee no callId yet');
+  //       webcamButton();
+  //       callButton();
+  //     } else {
+  //       webcamButton();
+  //       answerButton();
+  //     }
+  //   }, []);
 
   useEffect(() => {
     if (webcamVideo.current && localStream) {
@@ -94,15 +99,10 @@ export function VideoCall() {
     } catch (err) {
       console.error('Error accessing webcam:', err);
     }
-
-    setWebcamIsDisabled(true);
-    setCallButtonIsDisabled(false);
-    setAnswerButtonIsDisabled(false);
   }
 
   async function callButton() {
     const callDocRef = doc(collection(firestore, 'calls'));
-    setCallId(callDocRef.id);
 
     socket.emit('private_call_id', {
       sender: privatesender,
@@ -150,12 +150,10 @@ export function VideoCall() {
         }
       });
     });
-
-    sethangoutButtonIsDisabled(true);
   }
 
   async function answerButton() {
-    console.log(privateCallId);
+    console.log('data: ', privateCallId);
     const callDoc = doc(firestore, 'calls', privateCallId);
 
     const answerCandidates = collection(callDoc, 'answerCandidates');
@@ -202,9 +200,6 @@ export function VideoCall() {
       console.error('Error during the answer process:', error);
     }
   }
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCallId(event.target.value);
-  };
 
   return (
     <div>
@@ -218,30 +213,13 @@ export function VideoCall() {
         </span>
       </div>
 
-      <button onClick={webcamButton} disabled={webcamIsDisabled}>
-        Start webcam
-      </button>
+      <button onClick={webcamButton}>Start webcam</button>
       <h2>2. Create a new Call</h2>
-      <button onClick={callButton} disabled={callButtonIsDisabled}>
-        Create Call (offer)
-      </button>
+      <button onClick={callButton}>Create Call (offer)</button>
 
-      <h2>3. Join a Call</h2>
       <p>Answer the call from a different browser window or device</p>
 
-      <input
-        type="text"
-        value={callId}
-        placeholder="Enter call ID"
-        onChange={handleInputChange}
-      />
-      <button onClick={answerButton} disabled={answerButtonIsDisabled}>
-        Answer
-      </button>
-
-      <h2>4. Hangup</h2>
-
-      <button disabled={hangoutButtonIsDisabled}>Hangup</button>
+      <button onClick={answerButton}>Answer</button>
     </div>
   );
 }
