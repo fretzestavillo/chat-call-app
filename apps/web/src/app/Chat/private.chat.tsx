@@ -6,9 +6,11 @@ import '../../styles.css';
 export function PrivateChat() {
   const location = useLocation();
   const FromLOgindata = location.state;
+
   const privatesender = FromLOgindata.FromLOgindata.result.name;
-  const token = FromLOgindata.FromLOgindata.result.access_token;
   const privaterecipient = FromLOgindata.recipient;
+
+  const token = FromLOgindata.FromLOgindata.result.access_token;
   const socket = useContext(WebsocketContext);
   const [newMessage, setNewMessage] = useState('');
   const [privateMessage, setPrivateMessage] = useState<PrivateContent[]>([]);

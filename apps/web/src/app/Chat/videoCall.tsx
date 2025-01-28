@@ -1,6 +1,8 @@
 import { useLocation } from 'react-router-dom';
 import './tools/style.css';
-import { useEffect, useRef, useState } from 'react';
+import { WebsocketContext } from './socket';
+
+import { useContext, useEffect, useRef, useState } from 'react';
 import {
   doc,
   getFirestore,
@@ -17,8 +19,10 @@ import { initializeApp } from 'firebase/app';
 
 export function VideoCall() {
   const location = useLocation();
+
   const privatesender = location.state.privatesender;
   const privaterecipient = location.state.privaterecipient;
+  const privateCallId = location.state.caller?.callId;
 
   const app = initializeApp(firebaseConfig);
   const firestore = getFirestore(app);
@@ -33,6 +37,7 @@ export function VideoCall() {
     ],
     iceCandidatePoolSize: 10,
   };
+  const socket = useContext(WebsocketContext);
 
   const [pc] = useState(() => new RTCPeerConnection(servers));
 
@@ -99,6 +104,12 @@ export function VideoCall() {
     const callDocRef = doc(collection(firestore, 'calls'));
     setCallId(callDocRef.id);
 
+    socket.emit('private_call_id', {
+      sender: privatesender,
+      recipient: privaterecipient,
+      callId: callDocRef.id,
+    });
+
     const offerCandidatesRef = collection(callDocRef, 'offerCandidates');
     const answerCandidatesRef = collection(callDocRef, 'answerCandidates');
 
@@ -144,7 +155,8 @@ export function VideoCall() {
   }
 
   async function answerButton() {
-    const callDoc = doc(firestore, 'calls', callId);
+    console.log(privateCallId);
+    const callDoc = doc(firestore, 'calls', privateCallId);
 
     const answerCandidates = collection(callDoc, 'answerCandidates');
     const offerCandidates = collection(callDoc, 'offerCandidates');
@@ -199,11 +211,9 @@ export function VideoCall() {
       <h2> Start your Webcam</h2>
       <div className="videos">
         <span>
-          <h3>{privatesender} camera (localStream)</h3>
           <video ref={webcamVideo} autoPlay playsInline></video>
         </span>
         <span>
-          <h3>{privaterecipient} camera (remoteStream)</h3>
           <video ref={remoteVideo} autoPlay playsInline></video>
         </span>
       </div>
