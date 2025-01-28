@@ -76,7 +76,7 @@ export function Home() {
               </Alert>
             </Stack>
           ) : (
-            console.log('waiting for the call')
+            console.log()
           )}
         </h1>
       </div>
