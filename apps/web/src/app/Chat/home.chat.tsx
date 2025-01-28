@@ -1,8 +1,10 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { WebsocketContext } from './socket';
-import { Item, RegisteredUsers } from './tools/type';
+import { CallerItem, Item, RegisteredUsers } from './tools/type';
 import '../../styles.css';
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
 
 export function Home() {
   const navigate = useNavigate();
@@ -13,6 +15,7 @@ export function Home() {
   const socket = useContext(WebsocketContext);
   const [registeredUsers, setRegisteredUsers] = useState<RegisteredUsers[]>([]);
   const [activeUsers, setActiveUsers] = useState<Item[]>([]);
+  const [caller, setCaller] = useState<CallerItem>();
 
   const uniqueArray = Array.from(
     new Map(activeUsers.map((user) => [user.name, user])).values()
@@ -31,6 +34,10 @@ export function Home() {
 
     socket.on('activeUsers', (data: Item[]) => {
       setActiveUsers(data);
+    });
+
+    socket.on('private_caller_id', (data: CallerItem) => {
+      setCaller(data);
     });
   };
 
@@ -54,7 +61,24 @@ export function Home() {
   return (
     <div>
       <div>
-        <h1>Welcome to main chat, {myName}</h1>
+        <h1>
+          Welcome to main chat, {myName}
+          {caller?.sender ? (
+            <Stack
+              onClick={() => {
+                navigate('/VideoCall', { state: { caller } });
+              }}
+              sx={{ width: '95%', cursor: 'pointer' }}
+              spacing={2}
+            >
+              <Alert variant="filled" severity="success">
+                {caller?.sender} is calling.
+              </Alert>
+            </Stack>
+          ) : (
+            console.log('waiting for the call')
+          )}
+        </h1>
       </div>
 
       <div>
