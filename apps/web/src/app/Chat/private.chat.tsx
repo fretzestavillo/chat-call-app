@@ -1,8 +1,10 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 import { WebsocketContext } from './socket';
-import { Item, PrivateContent } from './tools/type';
+import { CallerItem, Item, PrivateContent } from './tools/type';
 import '../../styles.css';
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
 export function PrivateChat() {
   const location = useLocation();
   const FromLOgindata = location.state;
@@ -15,6 +17,7 @@ export function PrivateChat() {
   const [newMessage, setNewMessage] = useState('');
   const [privateMessage, setPrivateMessage] = useState<PrivateContent[]>([]);
   const navigate = useNavigate();
+  const [caller, setCaller] = useState<CallerItem>();
 
   useEffect(() => {
     getList();
@@ -42,11 +45,15 @@ export function PrivateChat() {
     socket.on('private_message', (newMessage: PrivateContent) => {
       setPrivateMessage((prev) => [...prev, newMessage]);
     });
+    socket.on('private_caller_id', (data: CallerItem) => {
+      setCaller(data);
+    });
 
     return () => {
       console.log('Unregistering Events...');
       socket.off('private_chat');
       socket.off('private_message');
+      socket.off('private_caller_id');
     };
   }, []);
 
@@ -73,9 +80,25 @@ export function PrivateChat() {
       <div>
         <div>
           <h1>
+            {' '}
+            {caller?.sender ? (
+              <Stack
+                onClick={() => {
+                  navigate('/VideoCall', { state: { caller } });
+                }}
+                sx={{ width: '95%', cursor: 'pointer' }}
+                spacing={2}
+              >
+                <Alert variant="filled" severity="success">
+                  {caller?.sender} is calling.
+                </Alert>
+              </Stack>
+            ) : (
+              console.log()
+            )}
             Welcome to private chat {privatesender},wanna start conversation
             with {privaterecipient} ? or call {privaterecipient} now{' '}
-            <button onClick={videoCall}>Video call</button>
+            <button onClick={videoCall}>Video call </button>
           </h1>
 
           <br />
