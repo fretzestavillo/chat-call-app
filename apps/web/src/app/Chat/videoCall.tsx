@@ -16,6 +16,7 @@ import {
 
 import { firebaseConfig } from './tools/config';
 import { initializeApp } from 'firebase/app';
+import { CallerItem } from './tools/type';
 
 export function VideoCall() {
   const location = useLocation();
@@ -46,17 +47,6 @@ export function VideoCall() {
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
-
-  //   useEffect(() => {
-  //     if (privateCallId === undefined) {
-  //       console.log('hereeeeeee no callId yet');
-  //       webcamButton();
-  //       callButton();
-  //     } else {
-  //       webcamButton();
-  //       answerButton();
-  //     }
-  //   }, []);
 
   useEffect(() => {
     if (webcamVideo.current && localStream) {
@@ -211,12 +201,14 @@ export function VideoCall() {
     <div>
       <h2>
         {' '}
-        Start your Webcam <button onClick={webcamButton}>Start webcam</button>
+        Start your Webcam
+        <button onClick={webcamButton}>Start webcam</button>
       </h2>
       <div className="videos">
         <span>
           <video ref={webcamVideo} autoPlay playsInline></video>
         </span>
+
         <span>
           <video ref={remoteVideo} autoPlay playsInline></video>
         </span>
