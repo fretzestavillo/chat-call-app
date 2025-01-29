@@ -16,7 +16,6 @@ import {
 
 import { firebaseConfig } from './tools/config';
 import { initializeApp } from 'firebase/app';
-import { CallerItem } from './tools/type';
 
 export function VideoCall() {
   const location = useLocation();
@@ -24,6 +23,10 @@ export function VideoCall() {
   const privatesender = location.state.privatesender;
   const privaterecipient = location.state.privaterecipient;
   const privateCallId = location.state.caller?.callId;
+  const socket = useContext(WebsocketContext);
+
+  const [isDisabled, setDisabled] = useState(false);
+  const [currentText, setText] = useState('Start your Webcam');
 
   const app = initializeApp(firebaseConfig);
   const firestore = getFirestore(app);
@@ -38,13 +41,10 @@ export function VideoCall() {
     ],
     iceCandidatePoolSize: 10,
   };
-  const socket = useContext(WebsocketContext);
 
   const [pc] = useState(() => new RTCPeerConnection(servers));
-
   const webcamVideo = useRef<HTMLVideoElement>(null);
   const remoteVideo = useRef<HTMLVideoElement>(null);
-
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
 
@@ -92,8 +92,13 @@ export function VideoCall() {
 
     if (privateCallId === undefined) {
       callButton();
+      setDisabled(true);
+
+      setText('');
     } else {
       answerButton();
+      setDisabled(true);
+      setText('');
     }
   }
 
@@ -200,9 +205,10 @@ export function VideoCall() {
   return (
     <div>
       <h2>
-        {' '}
-        Start your Webcam
-        <button onClick={webcamButton}>Start webcam</button>
+        {currentText}
+        <button hidden={isDisabled} onClick={webcamButton}>
+          Start webcam
+        </button>
       </h2>
       <div className="videos">
         <span>
