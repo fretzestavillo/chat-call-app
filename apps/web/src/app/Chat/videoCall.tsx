@@ -99,6 +99,12 @@ export function VideoCall() {
     } catch (err) {
       console.error('Error accessing webcam:', err);
     }
+
+    if (privateCallId === undefined) {
+      callButton();
+    } else {
+      answerButton();
+    }
   }
 
   async function callButton() {
@@ -203,7 +209,10 @@ export function VideoCall() {
 
   return (
     <div>
-      <h2> Start your Webcam</h2>
+      <h2>
+        {' '}
+        Start your Webcam <button onClick={webcamButton}>Start webcam</button>
+      </h2>
       <div className="videos">
         <span>
           <video ref={webcamVideo} autoPlay playsInline></video>
@@ -212,14 +221,6 @@ export function VideoCall() {
           <video ref={remoteVideo} autoPlay playsInline></video>
         </span>
       </div>
-
-      <button onClick={webcamButton}>Start webcam</button>
-      <h2>2. Create a new Call</h2>
-      <button onClick={callButton}>Create Call (offer)</button>
-
-      <p>Answer the call from a different browser window or device</p>
-
-      <button onClick={answerButton}>Answer</button>
     </div>
   );
 }
