@@ -5,6 +5,9 @@ import { CallerItem, Item, PrivateContent } from './tools/type';
 import '../../styles.css';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import { IconButton } from '@mui/material';
+import TelegramIcon from '@mui/icons-material/Telegram';
 export function PrivateChat() {
   const location = useLocation();
   const FromLOgindata = location.state;
@@ -96,9 +99,10 @@ export function PrivateChat() {
             ) : (
               console.log()
             )}
-            Welcome to private chat {privatesender},wanna start conversation
-            with {privaterecipient} ? or call {privaterecipient} now{' '}
-            <button onClick={videoCall}>Video call </button>
+            {privaterecipient}
+            <IconButton onClick={videoCall} color="primary">
+              <VideocamIcon style={{ fontSize: 50 }} />
+            </IconButton>
           </h1>
 
           <br />
@@ -110,7 +114,9 @@ export function PrivateChat() {
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
         />
-        <button onClick={onSubmit}>Submit</button>
+        <IconButton onClick={onSubmit} color="primary">
+          <TelegramIcon style={{ fontSize: 50 }} />
+        </IconButton>
       </div>
 
       <div>

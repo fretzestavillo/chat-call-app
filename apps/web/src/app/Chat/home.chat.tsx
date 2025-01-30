@@ -62,7 +62,6 @@ export function Home() {
     <div>
       <div>
         <h1>
-          Welcome to main chat, {myName}
           {caller?.sender ? (
             <Stack
               onClick={() => {
@@ -78,6 +77,7 @@ export function Home() {
           ) : (
             console.log()
           )}
+          Welcome to main chat, {myName}
         </h1>
       </div>
 

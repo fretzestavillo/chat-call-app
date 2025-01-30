@@ -4,6 +4,8 @@ import { useContext, useEffect, useState } from 'react';
 import { WebsocketContext } from './socket';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import { IconButton } from '@mui/material';
+import TelegramIcon from '@mui/icons-material/Telegram';
 
 export function GroupChat() {
   const navigate = useNavigate();
@@ -79,7 +81,7 @@ export function GroupChat() {
         ) : (
           console.log()
         )}
-        Welcome to the Group Chat {myName}{' '}
+        Hey {myName}{' '}
       </h1>
 
       <div>
@@ -106,7 +108,9 @@ export function GroupChat() {
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
         />
-        <button onClick={onSubmit}>Submit</button>
+        <IconButton onClick={onSubmit} color="primary">
+          <TelegramIcon style={{ fontSize: 50 }} />
+        </IconButton>
       </div>
     </>
   );
